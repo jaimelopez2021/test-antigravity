@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClientFlow - Gestión de Clientes</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">👥</div>
+        <div class="brand-title">
+          <h1>ClientFlow</h1>
+          <p>Gestión y seguimiento de estados de clientes</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btnResetData" class="btn btn-secondary" title="Recargar datos de ejemplo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Restablecer Demo
+        </button>
+        <button id="btnExportCsv" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Exportar CSV
+        </button>
+        <button id="btnNewClient" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Nuevo Cliente
+        </button>
+      </div>
+    </header>
+
+    <!-- Stat Summary Cards -->
+    <section class="stats-grid">
+      <div class="stat-card" data-status="todos" title="Mostrar todos los clientes">
+        <div class="stat-info">
+          <p>Total Clientes</p>
+          <h2 id="totalCount">0</h2>
+        </div>
+        <div class="stat-badge-icon" style="background-color: #e0e7ff; color: #4338ca;">📊</div>
+      </div>
+
+      <div class="stat-card" data-status="prospecto" title="Filtrar por Prospectos">
+        <div class="stat-info">
+          <p>Prospectos</p>
+          <h2 id="prospectosCount">0</h2>
+        </div>
+        <div class="stat-badge-icon" style="background-color: var(--status-prospecto-bg); color: var(--status-prospecto-text);">🎯</div>
+      </div>
+
+      <div class="stat-card" data-status="negociacion" title="Filtrar por En Negociación">
+        <div class="stat-info">
+          <p>En Negociación</p>
+          <h2 id="negociacionCount">0</h2>
+        </div>
+        <div class="stat-badge-icon" style="background-color: var(--status-negociacion-bg); color: var(--status-negociacion-text);">💼</div>
+      </div>
+
+      <div class="stat-card" data-status="activo" title="Filtrar por Clientes Activos">
+        <div class="stat-info">
+          <p>Activos</p>
+          <h2 id="activosCount">0</h2>
+        </div>
+        <div class="stat-badge-icon" style="background-color: var(--status-activo-bg); color: var(--status-activo-text);">✨</div>
+      </div>
+
+      <div class="stat-card" data-status="inactivo" title="Filtrar por Inactivos">
+        <div class="stat-info">
+          <p>Inactivos</p>
+          <h2 id="inactivosCount">0</h2>
+        </div>
+        <div class="stat-badge-icon" style="background-color: var(--status-inactivo-bg); color: var(--status-inactivo-text);">⏸️</div>
+      </div>
+    </section>
+
+    <!-- Toolbar: Search & Filters -->
+    <div class="toolbar-card">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, empresa, email o teléfono...">
+      </div>
+
+      <div class="filter-group">
+        <select id="statusFilter" class="select-filter">
+          <option value="todos">Todos los estados</option>
+          <option value="prospecto">🎯 Prospecto</option>
+          <option value="contactado">📞 Contactado</option>
+          <option value="negociacion">💼 En Negociación</option>
+          <option value="activo">✨ Activo</option>
+          <option value="inactivo">⏸️ Inactivo</option>
+        </select>
+
+        <select id="sortBy" class="select-filter">
+          <option value="newest">Más recientes primero</option>
+          <option value="oldest">Más antiguos primero</option>
+          <option value="name_asc">Nombre (A - Z)</option>
+          <option value="name_desc">Nombre (Z - A)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Clients Table -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="clients-table">
+          <thead>
+            <tr>
+              <th>Cliente / Empresa</th>
+              <th>Contacto</th>
+              <th>Estado Actual</th>
+              <th>Notas</th>
+              <th>Registro</th>
+              <th style="width: 100px; text-align: center;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="clientsTableBody">
+            <!-- Dynamic items rendered by app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">📂</div>
+        <h3>No se encontraron clientes</h3>
+        <p>No hay clientes que coincidan con los filtros aplicados o tu lista está vacía.</p>
+        <button onclick="document.getElementById('btnNewClient').click()" class="btn btn-primary">
+          Añadir primer cliente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Crear / Editar Cliente -->
+  <div id="clientModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Nuevo Cliente</h3>
+        <button id="btnCloseModal" class="btn-icon" style="border: none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="clientForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-grid-2 form-grid">
+              <div class="form-group">
+                <label for="inputName">Nombre Completo <span class="required">*</span></label>
+                <input type="text" id="inputName" class="form-input" required placeholder="Ej: Juan Pérez">
+              </div>
+
+              <div class="form-group">
+                <label for="inputCompany">Empresa / Negocio</label>
+                <input type="text" id="inputCompany" class="form-input" placeholder="Ej: Acme Corp">
+              </div>
+            </div>
+
+            <div class="form-grid-2 form-grid">
+              <div class="form-group">
+                <label for="inputEmail">Correo Electrónico</label>
+                <input type="email" id="inputEmail" class="form-input" placeholder="juan@ejemplo.com">
+              </div>
+
+              <div class="form-group">
+                <label for="inputPhone">Teléfono</label>
+                <input type="tel" id="inputPhone" class="form-input" placeholder="+1 234 567 890">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="selectStatus">Estado del Cliente <span class="required">*</span></label>
+              <select id="selectStatus" class="form-select" required>
+                <option value="prospecto">🎯 Prospecto (Nuevo contacto sin evaluar)</option>
+                <option value="contactado">📞 Contactado (Primer acercamiento realizado)</option>
+                <option value="negociacion">💼 En Negociación (Propuesta enviada)</option>
+                <option value="activo">✨ Activo (Cliente cerrado / con servicio)</option>
+                <option value="inactivo">⏸️ Inactivo (Pausa o relación finalizada)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="inputNotes">Observaciones / Notas de seguimiento</label>
+              <textarea id="inputNotes" class="form-textarea" placeholder="Escribe detalles importantes sobre reuniones, requerimientos o acuerdos..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnCancelModal" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" id="btnSaveClient" class="btn btn-primary">Guardar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
